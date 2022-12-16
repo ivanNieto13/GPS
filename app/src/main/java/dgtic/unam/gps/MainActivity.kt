@@ -1,4 +1,5 @@
 package dgtic.unam.gps
+
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -14,19 +15,22 @@ import dgtic.unam.gps.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var lm:LocationManager
-    private lateinit var locationListener:LocationListener
+    private lateinit var lm: LocationManager
+    private lateinit var locationListener: LocationListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        lm=getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        locationListener=Listener()
+        lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationListener = Listener()
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             lm.removeUpdates(locationListener)
-        }else{
+        } else {
             val criteria = Criteria()
             criteria.setAccuracy(Criteria.ACCURACY_FINE);
             criteria.setAltitudeRequired(false);
@@ -36,23 +40,29 @@ class MainActivity : AppCompatActivity() {
             var provider = lm.getBestProvider(criteria, true);
             if (provider != null) {
                 lm.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER,0,10.0.toFloat(),locationListener)
+                    LocationManager.NETWORK_PROVIDER, 0, 10.0.toFloat(), locationListener
+                )
             }
         }
     }
+
     override fun onDestroy() {
         super.onDestroy()
         lm.removeUpdates(locationListener)
     }
-    inner class Listener():LocationListener{
+
+    inner class Listener() : LocationListener {
         override fun onLocationChanged(location: Location) {
-            if(location!=null){
+            if (location != null) {
                 runOnUiThread {
                     binding.textGPS.text = "Localización cambio:\n" +
-                            "Latitud: "+ location.latitude .toString() +
-                            "\nLongitud: " +location.longitude.toString()}
-                Toast.makeText(binding.root.context, "Localización cambio: Lat:"+location.latitude
-                        +" Long:" +location.longitude, Toast.LENGTH_SHORT).show()
+                            "Latitud: " + location.latitude.toString() +
+                            "\nLongitud: " + location.longitude.toString()
+                }
+                Toast.makeText(
+                    binding.root.context, "Localización cambio: Lat:" + location.latitude
+                            + " Long:" + location.longitude, Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
